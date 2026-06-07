@@ -22,7 +22,7 @@ class ConcesionariaApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Sistema Experto - Concesionaria de Motocicletas")
-        self.root.geometry("1200x720")
+        self.root.geometry("1200x800")
         self.root.configure(bg="#111827")
         self.imagen_actual = None
 
@@ -32,7 +32,7 @@ class ConcesionariaApp:
     def crear_interfaz(self):
         titulo = tk.Label(
             self.root,
-            text="Concesionaria de Motocicletas",
+            text="Catalogo de Motocicletas",
             font=("Segoe UI", 24, "bold"),
             bg="#111827",
             fg="white"
@@ -115,6 +115,16 @@ class ConcesionariaApp:
             font=("Segoe UI", 11, "bold"),
             relief="flat",
             command=self.ventana_agregar
+        ).pack(padx=20, pady=8, fill="x")
+
+        tk.Button(
+            panel_izquierdo,
+            text="Recomendacion inteligente",
+            bg="#7c3aed",
+            fg="white",
+            font=("Segoe UI", 11, "bold"),
+            relief="flat",
+            command=self.ventana_recomendacion
         ).pack(padx=20, pady=8, fill="x")
 
         columnas = ("Marca", "Modelo", "Estilo", "Cilindrada", "Precio", "Año")
@@ -453,7 +463,169 @@ class ConcesionariaApp:
                 eliminar_moto(datos[0].lower(), datos[1].lower())
                 self.mostrar_motos(obtener_todas_las_motos())
                 messagebox.showinfo("Éxito", "Motocicleta eliminada correctamente.")
+    
+    
+    def ventana_recomendacion(self):
+        ventana = tk.Toplevel(self.root)
+        ventana.title("Recomendación inteligente")
+        ventana.geometry("900x650")
+        ventana.configure(bg="#1f2937")
+        ventana.resizable(False, False)
 
+        imagen_recomendada = {"img": None}
+
+        tk.Label(
+            ventana,
+            text="Recomendación inteligente",
+            bg="#1f2937",
+            fg="white",
+            font=("Segoe UI", 18, "bold")
+        ).pack(pady=15)
+
+        tk.Label(
+            ventana,
+            text="Uso principal",
+            bg="#1f2937",
+            fg="white",
+            font=("Segoe UI", 10, "bold")
+        ).pack(padx=20, pady=(8, 2), anchor="w")
+
+        uso = ttk.Combobox(
+            ventana,
+            values=["ciudad", "trabajo", "carretera", "terraceria", "deportivo"],
+            state="readonly",
+            font=("Segoe UI", 11)
+        )
+        uso.current(0)
+        uso.pack(padx=20, pady=5, fill="x")
+
+        tk.Label(
+            ventana,
+            text="Presupuesto máximo",
+            bg="#1f2937",
+            fg="white",
+            font=("Segoe UI", 10, "bold")
+        ).pack(padx=20, pady=(8, 2), anchor="w")
+
+        presupuesto = tk.Entry(ventana, font=("Segoe UI", 11))
+        presupuesto.pack(padx=20, pady=5, fill="x")
+        presupuesto.insert(0, "50000")
+
+        tk.Label(
+            ventana,
+            text="Experiencia",
+            bg="#1f2937",
+            fg="white",
+            font=("Segoe UI", 10, "bold")
+        ).pack(padx=20, pady=(8, 2), anchor="w")
+
+        experiencia = ttk.Combobox(
+            ventana,
+            values=["principiante", "intermedio", "avanzado"],
+            state="readonly",
+            font=("Segoe UI", 11)
+        )
+        experiencia.current(0)
+        experiencia.pack(padx=20, pady=5, fill="x")
+
+        def recomendar():
+            try:
+                uso_valor = uso.get().strip().lower()
+                presupuesto_valor = int(presupuesto.get().strip())
+                experiencia_valor = experiencia.get().strip().lower()
+
+                recomendaciones = recomendar_moto_datos(
+                    uso_valor,
+                    presupuesto_valor,
+                    experiencia_valor
+                )
+
+                if not recomendaciones:
+                    resultado.config(
+                        text="No se encontró una motocicleta que coincida con tus respuestas."
+                    )
+                    panel_img.config(image="", text="Sin imagen")
+                    return
+
+                moto = max(recomendaciones, key=lambda m: int(m["Cilindrada"]))
+
+                marca = str(moto["Marca"])
+                modelo = str(moto["Modelo"])
+                estilo = str(moto["Estilo"])
+                cilindrada = str(moto["Cilindrada"])
+                precio = str(moto["Precio"])
+                anio = str(moto["Anio"])
+
+                texto = (
+                    f"Moto recomendada:\n\n"
+                    f"Marca: {marca.upper()}\n"
+                    f"Modelo: {modelo.upper()}\n"
+                    f"Estilo: {estilo}\n"
+                    f"Cilindrada: {cilindrada} cc\n"
+                    f"Precio: ${precio}\n"
+                    f"Año: {anio}\n\n"
+                    f"Motivo: Esta moto se recomienda para uso {uso_valor}, "
+                    f"es adecuada para un conductor {experiencia_valor} "
+                    f"y se encuentra dentro del presupuesto indicado."
+                )
+
+                resultado.config(text=texto)
+
+                ruta = f"imagenes/{marca.lower()}_{modelo.lower()}.jpg"
+
+                if os.path.exists(ruta):
+                    img = Image.open(ruta)
+                    img = img.resize((360, 260))
+                    imagen_recomendada["img"] = ImageTk.PhotoImage(img)
+                    panel_img.config(image=imagen_recomendada["img"], text="")
+                else:
+                    panel_img.config(
+                        image="",
+                        text=f"No hay imagen para {marca.upper()} {modelo.upper()}"
+                    )
+
+            except Exception as e:
+                messagebox.showerror(
+                    "Error",
+                    f"No se pudo generar la recomendación:\n{e}"
+                )
+
+        tk.Button(
+            ventana,
+            text="Recomendar",
+            bg="#7c3aed",
+            fg="white",
+            font=("Segoe UI", 12, "bold"),
+            relief="flat",
+            command=recomendar
+        ).pack(padx=20, pady=15, fill="x")
+
+        contenedor_resultado = tk.Frame(ventana, bg="#1f2937")
+        contenedor_resultado.pack(padx=20, pady=20, fill="both", expand=True)
+
+        resultado = tk.Label(
+            contenedor_resultado,
+            text="Completa el formulario y presiona Recomendar.",
+            bg="#111827",
+            fg="white",
+            font=("Segoe UI", 11),
+            justify="left",
+            wraplength=380
+        )
+        resultado.pack(side="left", fill="both", expand=True, padx=(0, 10))
+
+        panel_img = tk.Label(
+            contenedor_resultado,
+            text="Imagen de la recomendación",
+            bg="#111827",
+            fg="white",
+            font=("Segoe UI", 11)
+        )
+        panel_img.pack(side="right", fill="both", expand=True, padx=(10, 0))
+
+        
+
+        
 
 if __name__ == "__main__":
     root = tk.Tk()

@@ -39,6 +39,14 @@ experienciaCilindrada(principiante, 0, 200).
 experienciaCilindrada(intermedio, 150, 400).
 experienciaCilindrada(avanzado, 300, 1300).
 
+recomendarMotoDatos(Uso, PresupuestoMax, Experiencia, Marca, Modelo, Estilo, Cilindrada, Precio, Anio) :-
+    usoEstilo(Uso, Estilo),
+    experienciaCilindrada(Experiencia, MinCil, MaxCil),
+    moto(Marca, Modelo, Estilo, Cilindrada, Precio, Anio),
+    Precio =< PresupuestoMax,
+    Cilindrada >= MinCil,
+    Cilindrada =< MaxCil.
+
 buscarPorEstilo(Estilo) :-
     moto(Marca, Modelo, Estilo, Cilindrada, Precio, Anio),
     write(Marca), write(' '), write(Modelo),
@@ -131,29 +139,3 @@ gestionarMoto(actualizar, Marca, Modelo, NuevoEstilo, NuevaCilindrada, NuevoPrec
     assertz(moto(Marca, Modelo, NuevoEstilo, NuevaCilindrada, NuevoPrecio, NuevoAnio)),
     write('Moto actualizada: '),
     write(Marca), write(' '), write(Modelo), nl.
-
-recomendarMoto(Uso, PresupuestoMax, Experiencia) :-
-    usoEstilo(Uso, Estilo),
-    experienciaCilindrada(Experiencia, MinCil, MaxCil),
-    moto(Marca, Modelo, Estilo, Cilindrada, Precio, Anio),
-    Precio =< PresupuestoMax,
-    Cilindrada >= MinCil,
-    Cilindrada =< MaxCil,
-
-    write('Recomendacion: '),
-    write(Marca), write(' '), write(Modelo),
-    write(' | '), write(Estilo),
-    write(' | '), write(Cilindrada), write('cc'),
-    write(' | $'), write(Precio),
-    write(' | '), write(Anio),
-    nl,
-
-    write('Motivo: Esta moto se recomienda para uso '),
-    write(Uso),
-    write(', es adecuada para un conductor '),
-    write(Experiencia),
-    write(' y se encuentra dentro del presupuesto indicado.'),
-    nl, nl,
-
-    fail.
-recomendarMoto(_, _, _).
