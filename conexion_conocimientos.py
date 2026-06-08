@@ -3,10 +3,31 @@
 # motocicletas para concesionaria.
 # Donde se llamaran las reglas y hechos de la base de conocimientos para ser 
 # utilizados en la interfaz de usuario.
+# Archivo de conexión entre la base de conocimientos Prolog
+# y la interfaz del sistema experto de motocicletas.
+
 from pyswip import Prolog
+import os
 
 prolog = Prolog()
-prolog.consult("c:/Users/uriel/Desktop/Semestres/10mo_Semestre/Logica y Funcional/programas/Sistema experto/motos.pl")
+
+RUTA_BASE = "c:/Users/uriel/Desktop/Semestres/10mo_Semestre/Logica y Funcional/programas/Sanchez Arenas_Fuentes Gonzalez"
+RUTA_PROLOG = os.path.join(RUTA_BASE, "motos.pl").replace("\\", "/")
+RUTA_GUARDADAS = os.path.join(RUTA_BASE, "motos_guardadas.pl").replace("\\", "/")
+
+
+def cargar_base_conocimientos():
+    try:
+        prolog.consult(RUTA_PROLOG)
+        if os.path.exists(RUTA_GUARDADAS):
+            list(prolog.query("retractall(moto(_,_,_,_,_,_))"))
+            prolog.consult(RUTA_GUARDADAS)
+
+    except Exception as e:
+        print(f"Error al cargar la base de conocimientos: {e}")
+
+
+cargar_base_conocimientos()
 
 
 def consultar_motos(consulta):
@@ -18,7 +39,9 @@ def consultar_motos(consulta):
 
 
 def obtener_todas_las_motos():
-    return consultar_motos("moto(Marca, Modelo, Estilo, Cilindrada, Precio, Anio)")
+    return consultar_motos(
+        "moto(Marca, Modelo, Estilo, Cilindrada, Precio, Anio)"
+    )
 
 
 def buscar_por_marca(marca):
@@ -58,18 +81,40 @@ def buscar_por_anio(anio):
 
 
 def agregar_moto(marca, modelo, estilo, cilindrada, precio, anio):
-    consulta = f"gestionarMoto(agregar, {marca.lower()}, {modelo.lower()}, {estilo.lower()}, {cilindrada}, {precio}, {anio})"
+    consulta = (
+        f"gestionarMoto(agregar, "
+        f"{marca.lower()}, "
+        f"{modelo.lower()}, "
+        f"{estilo.lower()}, "
+        f"{cilindrada}, "
+        f"{precio}, "
+        f"{anio})"
+    )
     return consultar_motos(consulta)
 
 
 def eliminar_moto(marca, modelo):
-    consulta = f"gestionarMoto(eliminar, {marca.lower()}, {modelo.lower()}, _, _, _, _)"
+    consulta = (
+        f"gestionarMoto(eliminar, "
+        f"{marca.lower()}, "
+        f"{modelo.lower()}, "
+        f"_, _, _, _)"
+    )
     return consultar_motos(consulta)
 
 
 def actualizar_moto(marca, modelo, estilo, cilindrada, precio, anio):
-    consulta = f"gestionarMoto(actualizar, {marca.lower()}, {modelo.lower()}, {estilo.lower()}, {cilindrada}, {precio}, {anio})"
+    consulta = (
+        f"gestionarMoto(actualizar, "
+        f"{marca.lower()}, "
+        f"{modelo.lower()}, "
+        f"{estilo.lower()}, "
+        f"{cilindrada}, "
+        f"{precio}, "
+        f"{anio})"
+    )
     return consultar_motos(consulta)
+
 
 def recomendar_moto_datos(uso, presupuesto, experiencia):
     return consultar_motos(

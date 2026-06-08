@@ -51,7 +51,6 @@ moto(ducati, monster937, naked, 937, 320000, 2024).
 moto(ducati, supersport950, deportiva, 937, 380000, 2024).
 moto(triumph, speed400, naked, 398, 115000, 2024).
 moto(triumph, tiger660, touring, 660, 220000, 2024).
-
 moto(royalenfield, hunter350, urbana, 349, 95000, 2024).
 moto(royalenfield, himalayan450, touring, 452, 185000, 2024).
 
@@ -153,19 +152,27 @@ buscarPorAnio(Anio) :-
     fail.
 buscarPorAnio(_).
 
+guardarBase :-
+    tell('c:/Users/uriel/Desktop/Semestres/10mo_Semestre/Logica y Funcional/programas/Sanchez Arenas_Fuentes Gonzalez/motos_guardadas.pl'),
+    listing(moto/6),
+    told.
+
 
 gestionarMoto(agregar, Marca, Modelo, Estilo, Cilindrada, Precio, Anio) :-
     assertz(moto(Marca, Modelo, Estilo, Cilindrada, Precio, Anio)),
+    guardarBase,
     write('Moto agregada: '),
     write(Marca), write(' '), write(Modelo), nl.
 
 gestionarMoto(eliminar, Marca, Modelo, _Estilo, _Cilindrada, _Precio, _Anio) :-
     retract(moto(Marca, Modelo, _, _, _, _)),
+    guardarBase,
     write('Moto eliminada: '),
     write(Marca), write(' '), write(Modelo), nl.
 
 gestionarMoto(actualizar, Marca, Modelo, NuevoEstilo, NuevaCilindrada, NuevoPrecio, NuevoAnio) :-
     retract(moto(Marca, Modelo, _, _, _, _)),
     assertz(moto(Marca, Modelo, NuevoEstilo, NuevaCilindrada, NuevoPrecio, NuevoAnio)),
+    guardarBase,
     write('Moto actualizada: '),
     write(Marca), write(' '), write(Modelo), nl.
