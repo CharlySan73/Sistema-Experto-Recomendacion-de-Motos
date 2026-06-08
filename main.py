@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from PIL import Image, ImageTk
 import os
+import random
 
 from conexion_conocimientos import (
     obtener_todas_las_motos,
@@ -547,7 +548,7 @@ class ConcesionariaApp:
                     panel_img.config(image="", text="Sin imagen")
                     return
 
-                moto = max(recomendaciones, key=lambda m: int(m["Cilindrada"]))
+                moto = random.choice(recomendaciones)
 
                 marca = str(moto["Marca"])
                 modelo = str(moto["Modelo"])
