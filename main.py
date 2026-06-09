@@ -529,6 +529,8 @@ class ConcesionariaApp:
         experiencia.current(0)
         experiencia.pack(padx=20, pady=5, fill="x")
 
+        imagen_recomendada = {"img": None, "indice": 0}
+
         def recomendar():
             try:
                 uso_valor = uso.get().strip().lower()
@@ -546,9 +548,12 @@ class ConcesionariaApp:
                         text="No se encontró una motocicleta que coincida con tus respuestas."
                     )
                     panel_img.config(image="", text="Sin imagen")
+                    imagen_recomendada["indice"] = 0
                     return
 
-                moto = random.choice(recomendaciones)
+                indice = imagen_recomendada["indice"] % len(recomendaciones)
+                moto = recomendaciones[indice]
+                imagen_recomendada["indice"] += 1
 
                 marca = str(moto["Marca"])
                 modelo = str(moto["Modelo"])
@@ -558,7 +563,7 @@ class ConcesionariaApp:
                 anio = str(moto["Anio"])
 
                 texto = (
-                    f"Moto recomendada:\n\n"
+                    f"Moto recomendada ({indice + 1} de {len(recomendaciones)}):\n\n"
                     f"Marca: {marca.upper()}\n"
                     f"Modelo: {modelo.upper()}\n"
                     f"Estilo: {estilo}\n"

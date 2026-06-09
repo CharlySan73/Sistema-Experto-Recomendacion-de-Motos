@@ -37,7 +37,7 @@ moto(ktm, exc300, todoterreno, 293, 135000, 2023).
 moto(ktm, rc390, deportiva, 373, 140000, 2024).
 moto(ktm, adventure390, touring, 373, 150000, 2024).
 moto(italika, ft150, urbana, 150, 22000, 2023).
-moto(italika, ws175, todoterreno, 175, 28000, 2023).
+moto(italika, ws175, scooter, 175, 28000, 2023).
 moto(italika, dm250, touring, 250, 48000, 2024).
 moto(italika, rt250, deportiva, 250, 52000, 2024).
 moto(vento, rocketman250, urbana, 250, 45000, 2024).
